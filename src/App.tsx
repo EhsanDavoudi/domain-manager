@@ -1,5 +1,5 @@
 import "./App.css";
-import DomainsView from "./DomainsView ";
+import DomainsView from "./DomainsView";
 
 function App() {
   return <DomainsView />;

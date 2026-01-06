@@ -47,7 +47,7 @@ export const domainsApi = baseApi.injectEndpoints({
         body,
       }),
       transformResponse: (raw: unknown) => DomainSchema.parse(raw),
-      invalidatesTags: (result, error, arg) => [
+      invalidatesTags: (_result, _error, arg) => [
         { type: "Domain", id: arg.id },
         { type: "Domain", id: "LIST" },
       ],
@@ -58,7 +58,7 @@ export const domainsApi = baseApi.injectEndpoints({
         url: `/domains/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         { type: "Domain", id: id },
         { type: "Domain", id: "LIST" },
       ],

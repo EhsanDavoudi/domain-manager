@@ -54,9 +54,19 @@ export default function DomainsView() {
       }
       setDrawerOpen(false);
     } catch (error) {
-      message.error("An error occurred. Please try again.");
+      message.error("An error occurred. Please try again." + error);
     }
   };
+
+  const onDelete = async (id: string) => {
+    try {
+      await deleteDomain(id).unwrap();
+      message.success("Domain deleted successfully");
+    } catch {
+      message.error("Failed to delete domain");
+    }
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-4">
@@ -85,8 +95,7 @@ export default function DomainsView() {
               { label: "Inactive", value: "inactive" },
             ]}
           />
-          <Button onClick={() => refetch()}
-            disabled={isFetching}>
+          <Button onClick={() => refetch()} disabled={isFetching}>
             Refresh
           </Button>
           <Button type="primary" onClick={openCreate}>
@@ -102,7 +111,7 @@ export default function DomainsView() {
       ) : (
         <DomainTable
           data={data?.items ?? []}
-          loading={isFetching}
+          loading={isFetching || isDeleting}
           total={data?.total ?? 0}
           page={page}
           pageSize={pageSize}
@@ -111,6 +120,7 @@ export default function DomainsView() {
             setPageSize(ps);
           }}
           onEdit={openEdit}
+          onDelete={onDelete}
         />
       )}
 

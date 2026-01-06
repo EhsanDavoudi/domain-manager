@@ -1,4 +1,4 @@
-import { Button, Space, Table } from "antd";
+import { Button, Popconfirm, Space, Table } from "antd";
 import type { Domain } from "../types/domain";
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   pageSize: number;
   onChangePage: (page: number, pageSize: number) => void;
   onEdit: (domain: Domain) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function DomainTable({
@@ -19,6 +20,7 @@ export default function DomainTable({
   pageSize,
   onChangePage,
   onEdit,
+  onDelete,
 }: Props) {
   const columns = [
     {
@@ -34,11 +36,23 @@ export default function DomainTable({
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_: unknown, record: Domain) => (
         <Space>
           <Button size="small" onClick={() => onEdit(record)}>
             Edit
           </Button>
+
+          <Popconfirm
+            title="Delete domain?"
+            description="This action cannot be undone."
+            okText="Delete"
+            okButtonProps={{ danger: true }}
+            onConfirm={() => onDelete(record.id)}
+          >
+            <Button size="small" danger>
+              Delete
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
