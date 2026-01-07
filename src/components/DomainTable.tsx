@@ -1,5 +1,11 @@
-import { Button, Popconfirm, Space, Table } from "antd";
+import { Button, Popconfirm, Space, Table, Tag } from "antd";
 import type { Domain } from "../types/domain";
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExportOutlined,
+} from "@ant-design/icons";
+import Link from "antd/es/typography/Link";
 
 type Props = {
   data: Domain[];
@@ -25,13 +31,43 @@ export default function DomainTable({
   const columns = [
     {
       title: "Domain Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "domain",
+      key: "domain",
+      render: (_: string, record: Domain) => (
+        <Space size={8}>
+          {/* Status icon */}
+          {record.isActive ? (
+            <CheckCircleFilled style={{ color: "#52c41a" }} />
+          ) : (
+            <CloseCircleFilled style={{ color: "#ff4d4f" }} />
+          )}
+
+          {/* Domain link */}
+          <Link
+            href={record.domain}
+            target="_blank"
+            // rel="noopener noreferrer"
+          >
+            {record.domain}
+          </Link>
+          <ExportOutlined style={{ fontSize: 14, color: "#8c8c8c" }} />
+        </Space>
+      ),
     },
     {
-      title: "Status",
+      title: "Verification Status",
       dataIndex: "status",
       key: "status",
+    },
+    {
+      title: "Active status",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (isActive: boolean) => (
+        <Tag className="font-semibold" color={isActive ? "success" : "error"}>
+          {isActive ? "Active" : "Inactive"}
+        </Tag>
+      ),
     },
     {
       title: "Actions",
@@ -68,9 +104,14 @@ export default function DomainTable({
         total,
         current: page,
         pageSize,
-        showSizeChanger: true,
         onChange: onChangePage,
+
+        showSizeChanger: false,
+        showQuickJumper: false,
+        showTotal: undefined,
+        placement: ["bottomCenter"],
       }}
+      className="table-header-outline table-row-outline"
     />
   );
 }

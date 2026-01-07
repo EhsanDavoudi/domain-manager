@@ -1,26 +1,21 @@
 import { z } from "zod";
 
-export const DomainStatusSchema = z.enum(["active", "inactive"]);
+export const DomainStatusSchema = z.enum(["verified", "pending", "rejected"]);
 
 export const DomainSchema = z.object({
   id: z.string(),
-  name: z
-    .string()
-    .min(1, "نام دامنه الزامی است")
-    .transform((v) => v.trim().toLowerCase())
-    .refine((v) => !v.startsWith("http://") && !v.startsWith("https://"), {
-      message: "دامنه نباید شامل http/https باشد",
-    }),
+  _id: z.string().optional(),
+  domain: z.string(),
   status: DomainStatusSchema,
-  createdAt: z.string().optional(),
+  isActive: z.boolean(),
+  createdDate: z.number(),
 });
+
+export const DomainsArraySchema = z.array(DomainSchema);
+
 
 export const UpsertDomainSchema = z.object({
-  name: DomainSchema.shape.name,
-  status: DomainStatusSchema,
-});
-
-export const DomainsListResponseSchema = z.object({
-  items: z.array(DomainSchema),
-  total: z.number(),
+  domain: z.string().min(1),
+  status: DomainStatusSchema, 
+  isActive: z.boolean(),
 });

@@ -1,1 +1,76 @@
 @import "tailwindcss";
+
+@layer components {
+  .table-header-outline.ant-table-wrapper .ant-table-thead > tr > th::before {
+    display: none !important;
+  }
+
+  .table-header-outline.ant-table-wrapper .ant-table-container table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  .table-header-outline.ant-table-wrapper .ant-table-thead > tr > th {
+    background: transparent !important;
+    border-inline: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .table-header-outline.ant-table-wrapper
+    .ant-table-thead
+    > tr
+    > th:not(:first-child):not(:last-child) {
+    border-block: 1px solid #d1d5db !important;
+  }
+
+  .table-header-outline.ant-table-wrapper
+    .ant-table-thead
+    > tr
+    > th:first-child {
+    border: 1px solid #d1d5db !important;
+    border-right: 0 !important;
+    border-top-left-radius: 8px !important;
+    /* border-bottom-left-radius: 1px !important; */
+  }
+
+  .table-header-outline.ant-table-wrapper
+    .ant-table-thead
+    > tr
+    > th:last-child {
+    border: 1px solid #d1d5db !important;
+    border-left: 0 !important;
+    border-top-right-radius: 8px !important;
+    /* border-bottom-right-radius: 8px !important; */
+  }
+
+  .table-header-outline.ant-table-wrapper .ant-table-container > tr {
+    border: 1px solid #d1d5db !important;
+  }
+
+    .table-row-outline.ant-table-wrapper .ant-table-container table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  /* base cells (you already have top/bottom borders) */
+  .table-row-outline.ant-table-wrapper .ant-table-tbody > tr > td {
+    border-top: 1px solid #d1d5db;
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  /* LEFT border for each row */
+  .table-row-outline.ant-table-wrapper
+    .ant-table-tbody
+    > tr
+    > td:first-child {
+    border-left: 1px solid #d1d5db;
+  }
+
+  /* RIGHT border for each row */
+  .table-row-outline.ant-table-wrapper
+    .ant-table-tbody
+    > tr
+    > td:last-child {
+    border-right: 1px solid #d1d5db;
+  }
+}

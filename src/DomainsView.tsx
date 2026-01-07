@@ -15,21 +15,31 @@ export default function DomainsView() {
   const [status, setStatus] = useState<DomainStatus | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [activeFilter, setActiveFilter] = useState<boolean | undefined>(
+    undefined
+  );
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<"create" | "edit">("create");
   const [selected, setSelected] = useState<Domain | null>(null);
 
-  const { data, isFetching, isError, refetch } = useGetDomainsQuery({
-    search: search.trim() || undefined,
-    status,
-    page,
-    pageSize,
+  const { data = [], isFetching, isError, refetch } = useGetDomainsQuery();
+
+  const filtered = data.filter((d) => {
+    const s = search.trim().toLowerCase();
+    const matchSearch = !s || d.domain.toLowerCase().includes(s);
+    const matchStatus = !status || d.status === status;
+    const matchActive =
+      activeFilter === undefined || d.isActive === activeFilter;
+    return matchSearch && matchStatus && matchActive;
   });
 
   const [addDomain, { isLoading: isAdding }] = useAddDomainMutation();
   const [updateDomain, { isLoading: isUpdating }] = useUpdateDomainMutation();
   const [deleteDomain, { isLoading: isDeleting }] = useDeleteDomainMutation();
+
+  const start = (page - 1) * pageSize;
+  const paged = filtered.slice(start, start + pageSize);
 
   const openCreate = () => {
     setDrawerMode("create");
@@ -54,7 +64,8 @@ export default function DomainsView() {
       }
       setDrawerOpen(false);
     } catch (error) {
-      message.error("An error occurred. Please try again." + error);
+      message.error("An error occurred. Please try again.");
+      console.log(error)
     }
   };
 
@@ -70,6 +81,8 @@ export default function DomainsView() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-4">
+        <h1 className="text-2xl">Domains</h1>
+
         <Space>
           <Input
             allowClear
@@ -91,13 +104,25 @@ export default function DomainsView() {
             }}
             style={{ width: 150 }}
             options={[
-              { label: "Active", value: "active" },
-              { label: "Inactive", value: "inactive" },
+              { value: "verified", label: "Verified" },
+              { value: "pending", label: "Pending" },
+              { value: "rejected", label: "Rejected" },
             ]}
           />
-          <Button onClick={() => refetch()} disabled={isFetching}>
-            Refresh
-          </Button>
+          <Select
+            allowClear
+            placeholder="Active?"
+            value={activeFilter}
+            onChange={(v) => {
+              setActiveFilter(v);
+              setPage(1);
+            }}
+            style={{ width: 140 }}
+            options={[
+              { value: true, label: "Active" },
+              { value: false, label: "Inactive" },
+            ]}
+          />
           <Button type="primary" onClick={openCreate}>
             Add Domain
           </Button>
@@ -110,9 +135,9 @@ export default function DomainsView() {
         </div>
       ) : (
         <DomainTable
-          data={data?.items ?? []}
+          data={paged}
+          total={filtered.length}
           loading={isFetching || isDeleting}
-          total={data?.total ?? 0}
           page={page}
           pageSize={pageSize}
           onChangePage={(p, ps) => {

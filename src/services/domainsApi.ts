@@ -1,27 +1,23 @@
-import { DomainSchema, DomainsListResponseSchema } from "../schema/domain";
-import type {
-  Domain,
-  DomainsListResponse,
-  GetDomainsParams,
-  UpsertDomainDto,
-} from "../types/domain";
+import z from "zod";
+import {
+  DomainsArraySchema,
+  DomainSchema,
+  UpsertDomainSchema,
+} from "../schema/domain";
+import type { Domain, UpsertDomainDto } from "../types/domain";
 import { baseApi } from "./baseApi";
+
+const DeleteSchema = z.object({ success: z.boolean() });
 
 export const domainsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getDomains: builder.query<DomainsListResponse, GetDomainsParams | void>({
-      query: (params) => ({
-        url: "/domains",
-        params: params ?? {},
-      }),
-      transformResponse: (raw: unknown) => DomainsListResponseSchema.parse(raw),
+    getDomains: builder.query<Domain[], void>({
+      query: () => ({ url: "domain" }),
+      transformResponse: (raw: unknown) => DomainsArraySchema.parse(raw),
       providesTags: (result) =>
-        result?.items?.length
+        result?.length
           ? [
-              ...result.items.map((d) => ({
-                type: "Domain" as const,
-                id: d.id,
-              })),
+              ...result.map((d) => ({ type: "Domain" as const, id: d.id })),
               { type: "Domain" as const, id: "LIST" },
             ]
           : [{ type: "Domain" as const, id: "LIST" }],
@@ -29,9 +25,9 @@ export const domainsApi = baseApi.injectEndpoints({
 
     addDomain: builder.mutation<Domain, UpsertDomainDto>({
       query: (body) => ({
-        url: "/domains",
+        url: "/domain",
         method: "POST",
-        body,
+        body: UpsertDomainSchema.parse(body), // ✅ validate/transform before sending
       }),
       transformResponse: (raw: unknown) => DomainSchema.parse(raw),
       invalidatesTags: [{ type: "Domain", id: "LIST" }],
@@ -42,24 +38,22 @@ export const domainsApi = baseApi.injectEndpoints({
       { id: string; body: UpsertDomainDto }
     >({
       query: ({ id, body }) => ({
-        url: `/domains/${id}`,
+        url: `domain/${id}`,
         method: "PUT",
-        body,
+        body: UpsertDomainSchema.parse(body), // ✅ validate/transform before sending
       }),
       transformResponse: (raw: unknown) => DomainSchema.parse(raw),
-      invalidatesTags: (_result, _error, arg) => [
+      invalidatesTags: (_r, _e, arg) => [
         { type: "Domain", id: arg.id },
         { type: "Domain", id: "LIST" },
       ],
     }),
 
     deleteDomain: builder.mutation<{ success: boolean }, string>({
-      query: (id) => ({
-        url: `/domains/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (_result, _error, id) => [
-        { type: "Domain", id: id },
+      query: (id) => ({ url: `domain/${id}`, method: "DELETE" }),
+      transformResponse: (raw: unknown) => DeleteSchema.parse(raw),
+      invalidatesTags: (_r, _e, id) => [
+        { type: "Domain", id },
         { type: "Domain", id: "LIST" },
       ],
     }),
