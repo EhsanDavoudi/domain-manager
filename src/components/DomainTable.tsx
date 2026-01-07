@@ -46,7 +46,7 @@ export default function DomainTable({
           <Link
             href={record.domain}
             target="_blank"
-            // rel="noopener noreferrer"
+            rel="noopener noreferrer"
           >
             {record.domain}
           </Link>

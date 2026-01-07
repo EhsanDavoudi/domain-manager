@@ -3,6 +3,7 @@ import type { Domain, DomainStatus, UpsertDomainDto } from "./types/domain";
 import {
   useAddDomainMutation,
   useDeleteDomainMutation,
+  useGetDomainByIdQuery,
   useGetDomainsQuery,
   useUpdateDomainMutation,
 } from "./services/domainsApi";
@@ -24,6 +25,12 @@ export default function DomainsView() {
   const [selected, setSelected] = useState<Domain | null>(null);
 
   const { data = [], isFetching, isError, refetch } = useGetDomainsQuery();
+
+  const domainId = selected?.id;
+  const { data: domainDetails, isFetching: isFetchingDomain } =
+    useGetDomainByIdQuery(domainId!, {
+      skip: !drawerOpen || drawerMode !== "edit" || !domainId,
+    });
 
   const filtered = data.filter((d) => {
     const s = search.trim().toLowerCase();
@@ -65,7 +72,7 @@ export default function DomainsView() {
       setDrawerOpen(false);
     } catch (error) {
       message.error("An error occurred. Please try again.");
-      console.log(error)
+      console.error(error);
     }
   };
 
@@ -152,8 +159,9 @@ export default function DomainsView() {
       <DomainDrawer
         open={drawerOpen}
         mode={drawerMode}
-        initial={selected}
+        initial={drawerMode === "edit" ? domainDetails ?? null : selected}
         loading={isAdding || isUpdating}
+        initialLoading={drawerMode === "edit" && isFetchingDomain}
         onClose={() => setDrawerOpen(false)}
         onSubmit={onSubmit}
       />

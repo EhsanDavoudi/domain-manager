@@ -23,11 +23,17 @@ export const domainsApi = baseApi.injectEndpoints({
           : [{ type: "Domain" as const, id: "LIST" }],
     }),
 
+    getDomainById: builder.query<Domain, string>({
+      query: (id) => ({ url: `domain/${id}` }),
+      transformResponse: (raw: unknown) => DomainSchema.parse(raw),
+      providesTags: (_r, _e, id) => [{ type: "Domain", id }],
+    }),
+
     addDomain: builder.mutation<Domain, UpsertDomainDto>({
       query: (body) => ({
         url: "/domain",
         method: "POST",
-        body: UpsertDomainSchema.parse(body), // ✅ validate/transform before sending
+        body: UpsertDomainSchema.parse(body),
       }),
       transformResponse: (raw: unknown) => DomainSchema.parse(raw),
       invalidatesTags: [{ type: "Domain", id: "LIST" }],
@@ -40,7 +46,7 @@ export const domainsApi = baseApi.injectEndpoints({
       query: ({ id, body }) => ({
         url: `domain/${id}`,
         method: "PUT",
-        body: UpsertDomainSchema.parse(body), // ✅ validate/transform before sending
+        body: UpsertDomainSchema.parse(body), 
       }),
       transformResponse: (raw: unknown) => DomainSchema.parse(raw),
       invalidatesTags: (_r, _e, arg) => [
@@ -63,6 +69,7 @@ export const domainsApi = baseApi.injectEndpoints({
 
 export const {
   useGetDomainsQuery,
+  useGetDomainByIdQuery,
   useAddDomainMutation,
   useUpdateDomainMutation,
   useDeleteDomainMutation,

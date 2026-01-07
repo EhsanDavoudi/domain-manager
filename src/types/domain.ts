@@ -1,24 +1,24 @@
 export type DomainStatus = "verified" | "pending" | "rejected";
 
 export interface Domain {
-  id: string; // از API
-  _id?: string; // بعضی رکوردها دارند
+  id: string;
+  _id?: string; 
   domain: string;
   status: DomainStatus;
   isActive: boolean;
-  createdDate: number; // timestamp (ثانیه یا میلی‌ثانیه)
+  createdDate: number;
 }
 
 export type GetDomainsParams = {
   search?: string;
   status?: DomainStatus;
   isActive?: boolean;
-  page?: number; // اگر API نداره، فعلاً client-side می‌زنیم
+  page?: number;
   pageSize?: number;
 };
 
 export type UpsertDomainDto = {
   domain: string;
-  isActive?: boolean;
-  status?: DomainStatus;
+  isActive: boolean;
+  status: DomainStatus;
 };

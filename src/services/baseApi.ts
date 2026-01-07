@@ -4,9 +4,9 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: (headers) => {
-      return headers;
-    },
+    // prepareHeaders: (headers) => {
+    //   return headers;
+    // },
   }),
   tagTypes: ["Domain"],
   endpoints: () => ({}),

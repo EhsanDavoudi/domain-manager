@@ -9,19 +9,11 @@ export default function AppProviders({ children }: PropsWithChildren) {
       <ConfigProvider
         theme={{
           token: {
-            // global tokens (optional)
             borderRadius: 8,
           },
           components: {
             Table: {
-              headerBg: "transparent",
-              headerColor: "inherit",
               borderColor: "#d1d5db",
-
-              // optional, depending on your desired look:
-              // rowHoverBg: "transparent",
-              // headerSortActiveBg: "transparent",
-              // headerSortHoverBg: "transparent",
             },
           },
         }}
